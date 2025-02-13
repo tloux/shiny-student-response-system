@@ -7,16 +7,9 @@
 #    http://shiny.rstudio.com/
 #
 
-library(googledrive)
 library(googlesheets4)
 library(ggplot2)
-
-drive_auth(email='loux@slu.edu')
-sheets_auth(token = drive_token())
-
-sheeturl = 'https://docs.google.com/spreadsheets/d/10-iYPEMsHKovj_4i_PsCMGQLP1ocESKfb6_dl9AUcC0/edit#gid=1466231250'
-driveinfo = drive_get(id=sheeturl)
-
+gs4_deauth()
 
 
 library(shiny)
@@ -47,17 +40,18 @@ server <- function(input, output) {
   
   output$distPlot <- renderPlot({
     
-    sheet_dat = read_sheet(driveinfo)
+    sheet_dat = read_sheet("https://docs.google.com/spreadsheets/d/10_wPfCJYvY8htw2T-vsU4HID8WPhH3OsnoPPEGHpk-E/edit?resourcekey=&gid=1608423419#gid=1608423419")
     
     sick_tr = sheet_dat$`How many kids in the treatment group got sick?`
     sick_contr = sheet_dat$`How many kids in the control group got sick?`
     
     sheet_dat$prop_diff = (sick_tr / 10) - (sick_contr / 10)
-
+    
     fig = ggplot(data=sheet_dat, aes(x=prop_diff)) + 
-      geom_bar(color='blue', fill='lightblue') + 
+      geom_histogram(breaks=seq(-1.05, 1.05, 0.1), 
+                     color='blue', fill='lightblue') + 
       xlab('Difference: proportions sick in treatment vs. control') + 
-      scale_x_continuous(breaks=seq(-0.9, 0.9, 0.2), limits=c(-1,1)) + 
+      scale_x_continuous(breaks=seq(-1, 1, 0.1), limits=c(-1.05, 1.05)) + 
       ylab('Number of randomizations') + 
       theme_minimal()
 
@@ -66,7 +60,7 @@ server <- function(input, output) {
       n_below = sum(sheet_dat$prop_diff <= -0.25)
       n_tot = nrow(sheet_dat)
       p_below = round(n_below/n_tot, 3)
-      p_lab = paste('Different at least -0.30:\n', n_below, '/', n_tot, '=', p_below)
+      p_lab = paste('Difference at least -0.30:\n', n_below, '/', n_tot, '=', p_below)
       
       ypos = max(table(sheet_dat$prop_diff))
       
