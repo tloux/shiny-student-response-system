@@ -22,7 +22,7 @@ ui <- fluidPage(
       sidebarPanel(
         checkboxInput(inputId='show_p', 
                       label='Show proportion of simulations with at least 7 
-                      sick children in treatment group', 
+                      sick employees in treatment group', 
                       value=FALSE), 
         checkboxInput(inputId='theory',
                       label='Show expected counts',
@@ -42,8 +42,8 @@ server <- function(input, output) {
     
     sheet_dat = read_sheet("https://docs.google.com/spreadsheets/d/10_wPfCJYvY8htw2T-vsU4HID8WPhH3OsnoPPEGHpk-E/edit?resourcekey=&gid=1608423419#gid=1608423419")
     
-    sick_tr = sheet_dat$`How many kids in the treatment group got sick?`
-    sick_contr = sheet_dat$`How many kids in the control group got sick?`
+    sick_tr = sheet_dat$`How many employees in the treatment group got sick?`
+    sick_contr = sheet_dat$`How many employees in the control group got sick?`
     
     sheet_dat$prop_diff = (sick_tr / 10) - (sick_contr / 10)
     
@@ -65,6 +65,7 @@ server <- function(input, output) {
       ypos = max(table(sheet_dat$prop_diff))
       
       fig = fig + 
+        geom_vline(xintercept=-0.25, color='red', linetype='dashed') + 
         geom_label(label=p_lab, x=1, y=ypos, vjust='inward', hjust='inward', 
                    size=5)
       
