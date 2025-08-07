@@ -16,7 +16,7 @@ library(shiny)
 
 ui <- fluidPage(
    
-   titlePanel("Hand washing card randomization results"),
+   titlePanel("Creating your own Student Response System with Google and Shiny"),
    
    sidebarLayout(
       sidebarPanel(
